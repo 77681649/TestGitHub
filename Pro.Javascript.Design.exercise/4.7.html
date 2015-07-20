@@ -1,0 +1,157 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div>
+        <span edit-mode="single">double click me, enter in edit mode</span>
+    </div>
+    <div>
+        <span edit-mode="mutli">double click me, enter in edit mode</span>
+    </div>
+    <div>
+        <span edit-mode="single">double click me, enter in edit mode</span>
+    </div>
+</body>
+
+<script type="text/javascript" src='jquery-1.11.3.min.js'></script>
+<script type="text/javascript" src='lib.js'></script>
+<script type="text/javascript">
+    /**
+     * 就地编辑 API
+     * 网页上的一端普通文本被点击后就变成一个配有一些按钮的表单域，以便用户对这段文本进行编辑
+     *     1. 双击普通文本 
+     *     2. 替换普通文本为文本域，以及'save' , 'cancel' 按钮
+     *     3. 编辑文本
+     *     4. save
+     *     5. cancel
+     *     6. 替换文本域为普通文本
+     * opts:{
+     *     id : 
+     *     type : {
+     *         'single',
+     *         'multi'
+     *     }
+     * }
+     */
+     function EditInPlaceField($raw){
+        
+        this.els = {
+            raw:$raw,
+
+            field:null,
+            input:null,
+            save:null,
+            cancel:null,
+        };
+
+        this.createElement();
+        this.attachEvent();
+     }
+
+     EditInPlaceField.prototype = {
+        createElement : function(){
+            var
+                els = this.els,
+                $rawParent = els.raw.parent();
+
+
+            $rawParent.append('<div id="edit-field-' + EditInPlaceField._identity + '" style="display:none"></div>');
+
+            els.field = $('#' + 'edit-field-' + EditInPlaceField._identity);
+
+            
+            this.createInput();
+            els.field.append('<button id="edit-save-' + EditInPlaceField._identity + '" >save</button>');
+            els.field.append('<button id="edit-cancel-' + EditInPlaceField._identity + '" >cancel</button>');
+
+            els.input = $('#' + 'edit-input-' + EditInPlaceField._identity);
+            els.save = $('#' + 'edit-save-' + EditInPlaceField._identity);
+            els.cancel = $('#' + 'edit-cancel-' + EditInPlaceField._identity);
+
+            EditInPlaceField._identity++;
+        },
+
+        replaceToField : function(){
+            var
+                els = this.els;
+
+            els.raw.hide();
+            els.input.val(els.raw.text());
+
+            els.field.show();
+            els.input.focus();
+        },
+
+        replaceToText:function(){
+            var
+                els = this.els;
+
+            els.raw.show();
+            els.field.hide();
+        },
+
+        attachEvent:function(){
+            var
+                els = this.els;
+
+            els.raw.on('dblclick',$.proxy(this.replaceToField , this));
+            els.save.on('click',$.proxy(this.save , this));
+            els.cancel.on('click',$.proxy(this.cancel , this));
+        },
+
+        save:function(){
+            var
+                els = this.els;
+
+            els.raw.text(els.input.val());
+            this.replaceToText();
+        },
+
+        cancel:function(){
+            this.replaceToText();
+        }
+     };
+
+     function EditInPlaceFieldSingle($raw){
+        EditInPlaceField.call(this , $raw);
+     }
+
+     EditInPlaceFieldSingle.prototype = EditInPlaceField.prototype;
+     EditInPlaceFieldSingle.prototype.createInput = function(){
+        this.els.field.append('<input type="text" id="edit-input-' + EditInPlaceField._identity + '" />');
+     };
+
+     function EditInPlaceFieldMutil($raw){
+        EditInPlaceField.call(this , $raw);
+     }
+
+     EditInPlaceFieldMutil.prototype = EditInPlaceField.prototype;
+     EditInPlaceFieldMutil.prototype.createInput = function(){
+        this.els.field.append('<textarea id="edit-input-' + EditInPlaceField._identity + '" />');
+     };
+
+     EditInPlaceField.init = function(){
+        $('[edit-mode]').each(function(){
+            var
+                $placeField = $(this),
+                editMode = $placeField.attr('edit-mode');
+
+            console.log(editMode);
+            
+            if(editMode === 'single'){
+                new EditInPlaceFieldSingle($placeField);
+            }
+            else{
+                new EditInPlaceFieldMutil($placeField);
+            }
+        });
+     };
+
+     EditInPlaceField._identity = 0;
+
+     $(function(){
+        EditInPlaceField.init();
+     });
+</script>
+</html>

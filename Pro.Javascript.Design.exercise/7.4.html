@@ -1,0 +1,119 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+</body>
+
+<script type="text/javascript" src='jquery-1.11.3.min.js'></script>
+<script type="text/javascript" src='lib.js'></script>
+<script type="text/javascript">
+    /**
+     * AjaxHandler - 专用型连接对象
+     * 可以根据网络条件创建专门的请求对象
+     *     1. Online
+     *     2. Offline
+     */
+    var AjaxHandler = new Interface('IAjaxHandler' , ['createXhrObject' , 'request']);
+
+    /**
+     * @description 可以根据浏览器能力的不同生成一个XMLHttpRequest或ActiveXObject实例
+     */
+    function SimpleAjaxHanlder() {
+
+    }
+
+    SimpleAjaxHanlder.prototype = {
+
+        /**
+         * @description 可以根据浏览器能力的不同生成一个XMLHttpRequest或ActiveXObject实例
+         */
+        createXhrObject: function() {
+            var
+                createXMLHttpRequet = function(){
+                    return new XMLHttpRequest();
+                },
+
+                createNewActiveXObj = function(){
+                    return new ActiveXObject('Msxml2.XMLHTTP');
+                },
+
+                createOldActiveXObj = function(){
+                    return new ActiveXObject('Microsoft.XMLHTTP');
+                },
+
+                methods = [createXMLHttpRequet , createNewActiveXObj , createOldActiveXObj];
+
+            for(var i = 0 , len = methods.length ; i < len ; i ++){
+                try{
+                    methods[i]();
+                }
+                catch(e){
+                    continue;
+                }
+
+                // 使用Memoizing技术缓存XHR对象
+                this.createXhrObject = methods[i];
+                return methods[i]();
+            }
+
+            throw new Error('create XHR Object failed.');
+        },
+
+        /**
+         * @description 负责执行发出请求和处理响应结果所需的一系列操作
+         * @param  {Object} opts 请求参数
+         */
+        request: function(opts) {
+
+        }
+    };
+
+    /**
+     * @description 在发起新的请求之前先确保所有请求都已经成功处理
+     */
+    function QueueHandler() {
+
+    }
+
+    Object.extend(QueueHandler , SimpleAjaxHanlder);
+    QueueHandler.prototype = {
+
+        request: function(opts) {
+
+        }
+    };
+
+    /**
+     * @description 在用户处于离线状态时把请求缓存起来
+     */
+    function OfflineHandler(){
+
+    }
+
+
+    Object.extend(OfflineHandler , SimpleAjaxHanlder);
+    OfflineHandler.prototype = {
+
+        request: function(opts) {
+
+        }
+    };
+
+    /**
+     * @description 根据网络环境创建不同的Ajax处理对象
+     */
+    function XhrHandler(){
+        createAjaxHandler : function(){
+            
+        }
+    }
+
+
+    var handler = new SimpleAjaxHanlder();
+
+    console.log(handler.createXhrObject());
+    console.log(handler.createXhrObject());
+    console.log(handler.createXhrObject());
+</script>
