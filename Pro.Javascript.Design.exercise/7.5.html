@@ -7,19 +7,14 @@
 
 <script type="text/javascript" src='jquery-1.11.3.min.js'></script>
 <script type="text/javascript" src='lib.js'></script>
+<script type="text/javascript" src='ajax-manager.js'></script>
+<script type="text/javascript" src='rss-manager.js'></script>
 <script type="text/javascript">
-    /**
-     * RSS阅读器
-     * config - 用于配置RSS的参数（url , updateInterval , id ,parent）
-     * AjaxHandler - 用于处理Ajax请求
-     * Display - 用于显示RSS内容
-     * FeedReader - 用于获取、解析、显示RSS
-     *     fetch - AJAX读取内容
-     *     parse - 解析内容
-     *     start / end - 自动更新
-     *
-     * FeedReaderManager - 用于拼装Display , AjaxHandler , FeedReader 的工厂
-     */
+    var
+        feedReader = rssManager.createFeedReader({
+            url : 'http://www.infoq.com/cn/feed?token=5tymV6DIDGfXqRBGJoVFLkdfv0snge61'
 
-     
+        });
+
+    
 </script>
