@@ -112,10 +112,14 @@ Object.extend = function(subClass, superClass) {
 
     subClass.prototype = new F();
 
-    // 定义一个构造函数时，其默认的prototype对象是一个Object类型的实例，
-    // 其contructor会被自动生成为该构造函数本身
-    // 手动将其prototype设置为另一个对象，新对象的contructor姿容不会具有原对象的contructor值
-    // 所以需要重新设置
+    // 定义一个构造函数时，默认的prototype对象是一个Object类型的实例
+    // 
+    // prototype.contructor会被自动生成为该构造函数本身
+    // 
+    // 如果手动将其prototype设置为另一个对象，
+    // 则prototype.contructor会被改为另一个对象的constructor
+    // 
+    // 所以需要重置一下
     subClass.prototype.constructor = subClass;
 };
 
@@ -153,3 +157,70 @@ Object.minix = function(obj) {
         }
     }
 };
+
+/**
+ * @description 创建类（支持继承）
+ * @param {Function} superClass 要继承的类 [可选]
+ * @param {Object} propertys  类的成员（属性、方法）
+ */
+function Class(superClass, propertys) {
+    var
+        parent;
+
+    if (arguments.length == 0 || arguments.length > 2) {
+        throw new Error('argument error.');
+    }
+
+    if (superClass && typeof argument === 'function') {
+        parent = superClass;
+    } else {
+        propertys = superClass;
+    }
+
+    propertys || (propertys = {});
+
+    function kclass() {
+        this.__propertys__();
+        this.initialize.apply(this , argument);
+    }
+
+    kclass.__superclass = parent;
+    kclass.__subclass = [];
+
+
+
+    if(parent){
+        var midClass = function (){};
+        midClass.prototype = parent.prototype;
+        kclass.prototype = new midClass;
+        kclass.prototype.constructor = kclass;
+
+        parent.__subclass.push(kclass);
+    }
+
+    
+    for(var name in propertys){
+        var
+            property = propertys[name];
+
+
+        // 绑定到原型上
+        kclass.prototype[name] = property;
+    }
+
+
+    var
+        superInitPropertys = function(){},
+        selfInitPropertys = propertys.__propertys__ || function(){};
+
+    parent && parent.__propertys__ && (superInitPropertys = parent.__propertys__);
+
+    kclass.prototype.__propertys__ = function(){
+        superInitPropertys.call(this);
+        selfInitPropertys.call(this);
+    };
+
+    kclass.prototype.initialize || (kclass.prototype.initialize = function(){});
+
+    return kclass;
+}
