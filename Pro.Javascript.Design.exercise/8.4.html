@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+</body>
+
+<script type="text/javascript" src='jquery-1.11.3.min.js'></script>
+<script type="text/javascript" src='lib.js'></script>
+<script type="text/javascript" src='ajax-queue.js'></script>
+<script type="text/javascript">
+    var
+    	ajaxQueue = new AjaxQueue;
+
+    ajaxQueue.queue({
+    	url :'http://www.baidzzzzu.com',
+    	type : 'get',
+    	success : function(data){
+    		console.log(data)
+    	},
+    	error:function(err){
+    		console.log(err)
+    	}
+    });
+
+    ajaxQueue.flush();
+</script>
